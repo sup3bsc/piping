@@ -8,6 +8,7 @@ options =
     main: require.main.filename
     ignore: /(\/\.|~$)/
     respawnOnExit: true
+    env: {}
 
 module.exports = (ops) ->
   if typeof ops is "string" or ops instanceof String
@@ -34,7 +35,7 @@ module.exports = (ops) ->
       interval: options.interval || 100
       binaryInterval: options.binaryInterval || 300
 
-    cluster.fork()
+    cluster.fork options.env
     respawnPending = false
     lastErr = ""
 
@@ -45,7 +46,7 @@ module.exports = (ops) ->
         hasWorkers = true
 
       if !hasWorkers && (respawnPending || options.respawnOnExit)
-        cluster.fork()
+        cluster.fork options.env
         respawnPending = false
 
 
@@ -75,7 +76,7 @@ module.exports = (ops) ->
 
       # if a worker died somehow, respawn it right away
       unless respawnPending
-        cluster.fork()
+        cluster.fork options.env
 
     return false
   else
